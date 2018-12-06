@@ -3,7 +3,7 @@
 ##################################################
 # GNU Radio Python Flow Graph
 # Title: Top Block
-# Generated: Mon Nov 19 13:44:05 2018
+# Generated: Fri Nov 30 20:06:12 2018
 ##################################################
 
 
@@ -28,7 +28,7 @@ from gnuradio.filter import firdes
 from gnuradio.wxgui import numbersink2
 from grc_gnuradio import wxgui as grc_wxgui
 from optparse import OptionParser
-import epy_block_0
+import epy_block_1
 import osmosdr
 import time
 import wx
@@ -82,9 +82,7 @@ class top_block(grc_wxgui.top_block_gui):
         self.rtlsdr_source_0.set_bandwidth(6e6, 0)
 
         self.fft_vxx_0 = fft.fft_vcc(nfft, True, (window.blackmanharris(nfft)), True, 1)
-        (self.fft_vxx_0).set_min_output_buffer(512)
-        (self.fft_vxx_0).set_max_output_buffer(1024)
-        self.epy_block_0 = epy_block_0.blk(teste_aderencia='jarque_bera', num_amostras=512)
+        self.epy_block_1 = epy_block_1.blk(teste_aderencia='anderson', num_amostras=1024)
         self.blocks_vector_to_stream_0 = blocks.vector_to_stream(gr.sizeof_gr_complex*1, nfft)
         self.blocks_stream_to_vector_0 = blocks.stream_to_vector(gr.sizeof_gr_complex*1, nfft)
 
@@ -94,8 +92,8 @@ class top_block(grc_wxgui.top_block_gui):
         # Connections
         ##################################################
         self.connect((self.blocks_stream_to_vector_0, 0), (self.fft_vxx_0, 0))
-        self.connect((self.blocks_vector_to_stream_0, 0), (self.epy_block_0, 0))
-        self.connect((self.epy_block_0, 0), (self.wxgui_numbersink2_0, 0))
+        self.connect((self.blocks_vector_to_stream_0, 0), (self.epy_block_1, 0))
+        self.connect((self.epy_block_1, 0), (self.wxgui_numbersink2_0, 0))
         self.connect((self.fft_vxx_0, 0), (self.blocks_vector_to_stream_0, 0))
         self.connect((self.rtlsdr_source_0, 0), (self.blocks_stream_to_vector_0, 0))
 

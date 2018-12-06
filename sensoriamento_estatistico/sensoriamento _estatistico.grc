@@ -466,13 +466,16 @@ import numpy as np
 from gnuradio import gr
 from scipy.stats import jarque_bera,anderson
 
-class blk(gr.sync_block):
+
+class blk(gr.sync_block): 
+  
+    backup = 0
     
-    def __init__(self, teste_aderencia ='jarque_bera', num_amostras = 1024): 
-        
+    def __init__(self,teste_aderencia ='jarque_bera', num_amostras = 1024): 
+       
         gr.sync_block.__init__(
             self,
-            name='Detector Estatístico',   
+            name='Detector Estatístico', 
             in_sig=[np.complex64],
             out_sig=[np.complex64]
         )
@@ -480,43 +483,60 @@ class blk(gr.sync_block):
 	self.num_amostras = num_amostras
 	
 	
-
+	
 
     def work(self, input_items, output_items):
-		
-		
-		arquivo_detec=open('/home/daniel/Gnuradio_Workspace/sensoriamento_estatistico/detec.txt','a')
-		num_slots = int(len(input_items[0])/ self.num_amostras)
-		vetor = np.array_split(abs(input_items[0]),num_slots)
-		teste = self.teste_aderencia
-		n = len(vetor)
-		
-		
+
+	teste = self.teste_aderencia
+	num = self.num_amostras
+
+	#Condicionais para analisar se existe ou não um backup de amostras
+	if not isinstance(self.backup,int):
+		 vetor_amostras = np.append(self.backup,np.abs(input_items[0]))
+	else:
+		 vetor_amostras = np.abs(input_items[0])
+
+	n = len(vetor_amostras)
+	print(n)
+
+	#Quebra do vetor em slots de tamanho num
+	num_slots = int(len(vetor_amostras)/num)
+	vetor_slots = np.array_split(abs(input_items[0]),num_slots)
+	self.backup = vetor_slots[:-1]
+	
+
+        if n &gt;= self.num_amostras: 
+
 		if teste == 'jarque_bera':
-			for i in range(n):
-				JB = jarque_bera(vetor[i])
-				print(JB)
-				if JB[1] &gt; 0.05:
-					print("livre")
-				else:
-					print("Ocupado")
+			JB = jarque_bera(vetor_amostras[:num])
+			#print(JB)
+			if JB[1] &gt; 0.05:
+				print("livre")
+			else:
+				print("Ocupado")
 
 		elif teste == 'anderson':
- 			for i in range(n): 
-				AD = anderson(vetor[i])
-				print(AD)
-				if AD[0] &lt; AD[1][2]:
-					print("Livre")
-				else:
-					print("Ocupado")
+ 			AD = anderson(vetor_amostras[:num])
+			#print(AD)
+			if AD[0] &lt; AD[1][2]:
+				print("Livre")
+			else:
+				print("Ocupado")
 		
-			
-			
-				
+	else:
+        	self.backup = vetor_amostras
 		
-		arquivo_detec.close()
+		
+	return len(output_items[0])
 
-		return len(output_items[0])
+
+
+
+
+
+
+
+
 
 </value>
     </param>
@@ -530,7 +550,7 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>_coordinate</key>
-      <value>(568, 288)</value>
+      <value>(584, 288)</value>
     </param>
     <param>
       <key>_rotation</key>
@@ -538,15 +558,15 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>id</key>
-      <value>epy_block_0</value>
+      <value>epy_block_1</value>
     </param>
     <param>
       <key>num_amostras</key>
-      <value>512</value>
+      <value>1024</value>
     </param>
     <param>
       <key>teste_aderencia</key>
-      <value>'jarque_bera'</value>
+      <value>'anderson'</value>
     </param>
   </block>
   <block>
@@ -593,11 +613,11 @@ class blk(gr.sync_block):
     </param>
     <param>
       <key>maxoutbuf</key>
-      <value>1024</value>
+      <value>0</value>
     </param>
     <param>
       <key>minoutbuf</key>
-      <value>512</value>
+      <value>0</value>
     </param>
     <param>
       <key>nthreads</key>
@@ -3262,7 +3282,7 @@ class blk(gr.sync_block):
   </connection>
   <connection>
     <source_block_id>blocks_vector_to_stream_0</source_block_id>
-    <sink_block_id>epy_block_0</sink_block_id>
+    <sink_block_id>epy_block_1</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>
   </connection>
@@ -3273,7 +3293,7 @@ class blk(gr.sync_block):
     <sink_key>0</sink_key>
   </connection>
   <connection>
-    <source_block_id>epy_block_0</source_block_id>
+    <source_block_id>epy_block_1</source_block_id>
     <sink_block_id>wxgui_numbersink2_0</sink_block_id>
     <source_key>0</source_key>
     <sink_key>0</sink_key>

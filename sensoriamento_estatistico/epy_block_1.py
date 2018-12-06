@@ -1,65 +1,71 @@
-
-#from __future__ import division, print_function, absolute_import
-
-#import warnings
-#import math
-#from collections import namedtuple
-
+# encoding: utf-8
 import numpy as np
-#from numpy import array, asarray, ma, zeros
-
-#from scipy._lib.six import callable, string_types
-#from scipy._lib._version import NumpyVersion
-#import scipy.special as special
-#import scipy.linalg as linalg
-from scipy.stats import distributions
-#import numpy
-#from scipy.stats import kurtosis, skew, stats
 from gnuradio import gr
+from scipy.stats import jarque_bera,anderson
 
-class blk(gr.sync_block):  
+
+class blk(gr.sync_block): 
+  
+    backup = 0
     
-
-    def __init__(self):  
-        
+    def __init__(self,teste_aderencia ='jarque_bera', num_amostras = 1024): 
+       
         gr.sync_block.__init__(
             self,
-            name='Jarque Bera',  
-            in_sig=[np.float32],
-            out_sig=[np.float32],
+            name='Detector Estatístico', 
+            in_sig=[np.complex64],
+            out_sig=[np.complex64]
         )
+	self.teste_aderencia = teste_aderencia
+	self.num_amostras = num_amostras
 	
-        
-        
+	
+	
 
     def work(self, input_items, output_items):
 
-		arquivo_detec=open('/home/daniel/Gnuradio_Workspace/sensoriamento_estatistico/detec.txt','a')
-		
-		n = float(input_items[0].size)
-		mu = input_items[0].mean()
-		diffx = input_items[0] - mu
-		skewness = (1 / n * np.sum(diffx**3)) / (1 / n * np.sum(diffx**2))**(3 / 2.)
-		kurtosis = (1 / n * np.sum(diffx**4)) / (1 / n * np.sum(diffx**2))**2
-		JB = n / 6 * (skewness**2 + (kurtosis - 3)**2 / 4)
-		p = 1 - distributions.chi2.cdf(JB, 2)
-		for i in range(len(input_items[0])):
+	teste = self.teste_aderencia
+	num = self.num_amostras
+	
+	if not isinstance(self.backup,int):
+		 vetor_amostras = np.append(self.backup,np.abs(input_items[0]))
+	else:
+		 vetor_amostras = np.abs(input_items[0])
 
-			a=p * input_items[0][i]
-			
-			if JB > a:
-				
-				
-				vetor_dados_detec = [p, input_items[0][i], a, JB]
-				
-				arquivo_detec.write('%s' %vetor_dados_detec)
-				
-				arquivo_detec.write('\n')
-				
+	n = len(vetor_amostras)
+	print(n)
+	
+
+        if n >= self.num_amostras: 
+
+		if teste == 'jarque_bera':
+			JB = jarque_bera(vetor_amostras[:num])
+			#print(JB)
+			if JB[1] > 0.05:
+				print("livre")
+			else:
+				print("Ocupado")
+
+		elif teste == 'anderson':
+ 			AD = anderson(vetor_amostras[:num])
+			#print(AD)
+			if AD[0] < AD[1][2]:
+				print("Livre")
+			else:
+				print("Ocupado")
 		
-		arquivo_detec.close()
+	else:
+        	self.backup = vetor_amostras
 		
-		return len(output_items[0])
+		
+	return len(output_items[0])
+
+
+
+
+
+
+
 
 
 
