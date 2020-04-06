@@ -5,5 +5,5 @@ Propor uma arquitetura de sensoriamento espectral cooperativo utilizando rádio 
 
 ### Tecnologias
 - `Framework`  GNU Radio Companion
-- `Web` ReactJS
+- `Frontend RF` HackRF e RTLSDR
 
