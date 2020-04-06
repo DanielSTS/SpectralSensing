@@ -4,6 +4,6 @@ Propor uma arquitetura de sensoriamento espectral cooperativo utilizando rádio 
 
 
 ### Tecnologias
-- `Backend`  Node.js
+- `Framework`  GNU Radio Companion
 - `Web` ReactJS
 - `Mobile` Reacte Native
