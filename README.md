@@ -4,5 +4,5 @@ Propor uma arquitetura de sensoriamento espectral cooperativo utilizando rádio 
 
 ## Tecnologias Usadas 
 
--`Framework` GNU Radio Companion - GRC
+-`Framework` GNU Radio Companion-GRC
 -`Frontend RF` HackRF e RTL-SDR
