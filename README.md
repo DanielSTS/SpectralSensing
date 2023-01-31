@@ -1,9 +1,8 @@
-# Sensoriamento Espectral
+# Spectral Sensing
 
-Propor uma arquitetura de sensoriamento espectral cooperativo utilizando rádio definido por software, possibilitando a eficiência na descoberta de canais livres para transmissão e recepção de dados em uma rede sem fio.
+A cooperative spectral sensing architecture using software-defined radio (SDR) is proposed to efficiently discover free channels for data transmission and reception in a wireless network.
 
-
-### Tecnologias
+## Technologies
 - `Framework`  GNU Radio Companion
-- `Frontend RF` HackRF e RTLSDR
+- `Frontend RF` HackRF and RTLSDR
 
